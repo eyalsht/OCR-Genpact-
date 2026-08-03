@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # No API key, no network access to anything. The module is standard
+      # library only, so a fresh clone has to be enough to run the suite.
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test
+        run: python -m pytest -q
+
+      # Fails the build if README.md's results table disagrees with what the
+      # code actually produces. Documentation that cannot go stale.
+      - name: README results table is current
+        run: python render_results.py --check
+
+      - name: Module imports nothing outside the standard library
+        run: |
+          python - <<'PY'
+          import ast, sys, pathlib
+
+          stdlib = set(sys.stdlib_module_names)
+          local = {"sample_data", "invoice_cleaner"}
+          tree = ast.parse(pathlib.Path("invoice_cleaner.py").read_text())
+          bad = []
+
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  names = [alias.name for alias in node.names]
+              elif isinstance(node, ast.ImportFrom):
+                  names = [node.module or ""]
+              else:
+                  continue
+              for name in names:
+                  root = name.split(".")[0]
+                  if root and root not in stdlib and root not in local:
+                      bad.append(name)
+
+          if bad:
+              sys.exit(f"invoice_cleaner.py imports non-stdlib modules: {sorted(set(bad))}")
+          print("zero runtime dependencies confirmed")
+          PY
