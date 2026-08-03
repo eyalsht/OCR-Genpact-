@@ -37,6 +37,7 @@ from invoice_cleaner import (  # noqa: E402
     normalize_amount,
     process_records,
 )
+from render_results import verdicts_by_index  # noqa: E402
 from sample_data import EXTENDED_RECORDS, RAW_RECORDS  # noqa: E402
 
 ASSETS = REPO_ROOT / "docs" / "assets"
@@ -336,7 +337,7 @@ def build_ocr_catch_gif() -> None:
 
 def build_pipeline_gif() -> None:
     clean, flagged = process_records(RAW_RECORDS)
-    verdicts = _verdicts_by_index(RAW_RECORDS, clean, flagged)
+    verdicts = _codes_by_index(RAW_RECORDS, clean, flagged)
 
     card = TerminalCard(cols=90, rows=14, title="python invoice_cleaner.py")
     frames: list[Image.Image] = []
@@ -359,7 +360,7 @@ def build_pipeline_gif() -> None:
         durations.append(260)
 
         verdict, codes = verdicts[index]
-        if verdict == "CLEAN":
+        if verdict == "clean":
             row = [*label, ("  CLEAN", "accent!")]
         else:
             row = [*label, ("  FLAGGED  ", "error!"), (", ".join(codes), "warning")]
@@ -386,6 +387,14 @@ def build_pipeline_gif() -> None:
     write_gif(ASSETS / "pipeline.gif", frames, durations)
 
 
+def _codes_by_index(raw_records: list[dict], clean: list[dict], flagged: list[dict]) -> dict:
+    """verdicts_by_index, reduced to just the reason codes these figures need."""
+    return {
+        index: (state, [reason["code"] for reason in record.get("reasons", [])])
+        for index, (state, record) in verdicts_by_index(raw_records, clean, flagged).items()
+    }
+
+
 def _record_spans(record: dict) -> list[tuple[str, str]]:
     """One input row, with digit-lookalike letters picked out in amber.
 
@@ -408,36 +417,6 @@ def _record_spans(record: dict) -> list[tuple[str, str]]:
         spans.append((buffer, "secondary"))
     spans.append((" " * max(1, 13 - len(literal)) + f"{record['date']:<12}", "secondary"))
     return spans
-
-
-def _verdicts_by_index(
-    raw_records: list[dict], clean: list[dict], flagged: list[dict]
-) -> dict[int, tuple[str, list[str]]]:
-    """Map each input row back to its verdict.
-
-    Flagged records keep their original fields, and duplicates point at the
-    index they duplicate, so rows can be matched back without the pipeline
-    having to hand out identifiers it does not otherwise need.
-    """
-    verdicts: dict[int, tuple[str, list[str]]] = {}
-    clean_queue, flagged_queue = list(clean), list(flagged)
-
-    for index, record in enumerate(raw_records):
-        head = clean_queue[0] if clean_queue else None
-        is_clean = (
-            head is not None
-            and head["invoice_id"] == str(record.get("invoice_id", "")).strip()
-            and head["amount_raw"] == record.get("amount")
-        )
-        if is_clean:
-            clean_queue.pop(0)
-            verdicts[index] = ("CLEAN", [])
-        else:
-            entry = flagged_queue.pop(0)
-            verdicts[index] = ("FLAGGED", [reason["code"] for reason in entry["reasons"]])
-
-    assert not clean_queue and not flagged_queue, "every record must be accounted for"
-    return verdicts
 
 
 # --------------------------------------------------------------------------
@@ -466,7 +445,7 @@ def build_rule_matrix(mode: str) -> None:
     """Which rule fired on which of the eight sample rows."""
     theme = THEMES[mode]
     clean, flagged = process_records(RAW_RECORDS)
-    verdicts = _verdicts_by_index(RAW_RECORDS, clean, flagged)
+    verdicts = _codes_by_index(RAW_RECORDS, clean, flagged)
     severity = _severity_by_code(flagged)
 
     rules = sorted({code for _, codes in verdicts.values() for code in codes})
@@ -492,12 +471,12 @@ def build_rule_matrix(mode: str) -> None:
         ax.text(
             col + 0.5,
             -0.45,
-            "CLEAN" if verdict == "CLEAN" else "FLAGGED",
+            "CLEAN" if verdict == "clean" else "FLAGGED",
             ha="center",
             va="center",
             fontsize=8.5,
             weight="bold",
-            color=theme["accent"] if verdict == "CLEAN" else theme["error"],
+            color=theme["accent"] if verdict == "clean" else theme["error"],
         )
 
     ax.set_xlim(0, len(columns))
