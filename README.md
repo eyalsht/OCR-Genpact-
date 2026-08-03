@@ -16,6 +16,27 @@ clean_records, flagged_records = process_records(raw_records)
 
 ---
 
+## The conversations behind this
+
+Three AI conversations produced this repository, and all three are readable in full:
+
+| # | Chat | What happened in it |
+|---|---|---|
+| 1 | **[Planning](https://claude.ai/share/9925bbb9-a404-4a08-b618-e92a6a23dea5)** ↗ | Before any code. Where the central rule came from: OCR repair belongs to the *field*, not the string — so it may touch an amount and must never touch an identifier. |
+| 2 | **[Build session](docs/ai-chat-log/02-build-session.md)** | The TDD cycles, and the two bugs that only surfaced by running things: a chart that rendered completely empty, and a README install command that failed on a fresh clone. |
+| 3 | **[Cold first draft](docs/ai-chat-log/03-first-draft-session.md)** | A fresh context given *only* the assignment text and told to write [`naive_first_draft.py`](naive_first_draft.py) in one pass, without running or revising it. Committed unedited, before I wrote anything of my own. |
+
+Chats 2 and 3 are exported from Claude Code's own session files by
+[`tools/export_chat.py`](tools/export_chat.py) — images dropped, long tool output truncated,
+harness scaffolding stripped, nothing else edited. The model's reasoning is kept and folded
+into `<details>`, including the passages where it was wrong.
+
+[**`THOUGHTS.md`**](THOUGHTS.md) is the half-page write-up the brief asks for;
+[**`docs/ai-log.md`**](docs/ai-log.md) is the longer account of what I asked for, what came
+back, and where I disagreed with it.
+
+---
+
 ## The one decision this module is built around
 
 OCR reads a letter `O` where a digit `0` should be. Repairing that inside an **amount** is
