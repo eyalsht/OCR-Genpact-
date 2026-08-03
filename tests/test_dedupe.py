@@ -64,14 +64,20 @@ def test_ocr_lookalike_id_is_not_a_duplicate():
     field precisely so it can never reach the identifier -- "fixing" INV-1OO1
     would merge two different invoices into one and silently delete a payable.
     Mis-flagging costs someone five minutes; this would cost real money.
+
+    The odd identifier is still worth a human's attention, so it is flagged as
+    malformed. Flagged and distinct is the correct outcome; the failure mode
+    being guarded against is being merged, not being noticed.
     """
     clean, flagged = process_records(
         [_row("INV-1001"), _row("INV-1OO1")], reference_date=REFERENCE
     )
 
-    assert len(clean) == 2
-    assert flagged == []
-    assert {record["invoice_id"] for record in clean} == {"INV-1001", "INV-1OO1"}
+    assert [record["invoice_id"] for record in clean] == ["INV-1001"]
+    assert [record["invoice_id"] for record in flagged] == ["INV-1OO1"]
+    assert _codes(flagged[0]) == ["INVOICE_ID_MALFORMED"]
+    # The point of the test: it was never treated as a copy of INV-1001.
+    assert not any(code.startswith("DUPLICATE") for code in _codes(flagged[0]))
 
 
 def test_duplicate_of_an_already_flagged_record_is_still_caught():
