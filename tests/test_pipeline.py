@@ -130,7 +130,7 @@ def test_is_deterministic():
 def test_input_is_not_mutated():
     before = [dict(record) for record in RAW_RECORDS]
     process_records(RAW_RECORDS)
-    assert RAW_RECORDS == before
+    assert before == RAW_RECORDS
 
 
 def test_empty_batch():

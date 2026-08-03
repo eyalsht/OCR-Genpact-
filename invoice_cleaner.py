@@ -491,3 +491,34 @@ def _flagged_record(item: _Normalized, reasons: list[dict], duplicate_of: int | 
     if duplicate_of is not None:
         record["duplicate_of"] = duplicate_of
     return record
+
+
+def _report(raw_records: list[dict]) -> str:
+    """Human-readable summary of a run. Used by ``python invoice_cleaner.py``."""
+    clean, flagged = process_records(raw_records)
+    lines = [
+        "",
+        f"  {len(raw_records)} records in  ->  {len(clean)} clean, {len(flagged)} flagged",
+        "",
+    ]
+
+    for record in clean:
+        lines.append(
+            f"  CLEAN    {record['invoice_id']:<10} "
+            f"{record['amount']:>12,.2f}   {record['date']}   {record['vendor']}"
+        )
+        for note in record["repairs"] + record["notes"]:
+            lines.append(f"                      -> {note}")
+
+    for record in flagged:
+        lines.append(f"  FLAGGED  {record.get('invoice_id') or '<no id>'}")
+        for reason in record["reasons"]:
+            lines.append(f"                      {reason['code']}: {reason['message']}")
+
+    return "\n".join([*lines, ""])
+
+
+if __name__ == "__main__":
+    from sample_data import RAW_RECORDS
+
+    print(_report(RAW_RECORDS))
