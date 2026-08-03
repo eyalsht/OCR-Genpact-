@@ -1,21 +1,26 @@
 # Chat 1 — Planning conversation (claude.ai)
 
-> **⚠️ PLACEHOLDER — this transcript still needs to be pasted in.**
+The first conversation, held on claude.ai before any code existed:
+
+**https://claude.ai/chat/c5fee4d4-2d55-4000-87a5-9c443a5cb9e1**
+
+> **⚠️ This is a private conversation URL, not a share link.**
 >
-> This was the first conversation, held on claude.ai before any code existed. Its output is
-> already committed (see *What this chat produced* below), but the conversation itself is not
-> yet here.
+> `claude.ai/chat/…` is the author's own address for a conversation — opening it while signed
+> in as anyone else gives a login prompt, not the transcript. A public share link looks like
+> `claude.ai/share/…` instead.
 >
-> **To fill this in, do one of:**
+> **To make this reviewable, do one of:**
 >
-> 1. **Share link** — open the conversation on claude.ai → *Share* → copy link, and replace
->    this whole block with it.
-> 2. **Exported transcript** — copy the conversation text and paste it below the divider,
->    keeping the `### 🧑 Eyal` / `### 🤖 Claude` heading style used in
+> 1. **Publish a share link** — open the conversation → *Share* → *Create public link*, then
+>    replace the URL above with the `claude.ai/share/…` one it gives you.
+> 2. **Paste the transcript** below the divider at the end of this file, keeping the
+>    `### 🧑 Eyal` / `### 🤖 Claude` heading style used in
 >    [`02-build-session.md`](02-build-session.md) so all three read the same way.
 >
-> The brief asks for "a shared link **or** exported transcript", so either is sufficient.
-> Until then this file is the one incomplete part of deliverable #3.
+> Option 2 is the more durable of the two: a share link can be revoked, and the repository is
+> the thing being submitted. Chats 2 and 3 are already committed in full, so doing the same
+> here makes deliverable #3 self-contained.
 
 ---
 

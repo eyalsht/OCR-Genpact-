@@ -115,7 +115,7 @@ Full conversations are in [`ai-chat-log/`](ai-chat-log/):
 
 | # | Chat | Status |
 |---|---|---|
-| 1 | [Planning conversation](ai-chat-log/01-planning-chat.md) (claude.ai) | ⚠️ transcript still to be added; its output is committed in [`planning/`](planning/) and [`RESEARCH.md`](RESEARCH.md) |
+| 1 | [Planning conversation](ai-chat-log/01-planning-chat.md) (claude.ai) | ⚠️ linked, but not yet a public share link; its output is committed in [`planning/`](planning/) and [`RESEARCH.md`](RESEARCH.md) |
 | 2 | [Build session](ai-chat-log/02-build-session.md) (Claude Code) | ✅ full |
 | 3 | [Cold first-draft session](ai-chat-log/03-first-draft-session.md) | ✅ full |
 
