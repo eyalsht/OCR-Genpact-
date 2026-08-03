@@ -18,10 +18,24 @@ guess when it would have to change more than two characters.
 from __future__ import annotations
 
 import re
+from datetime import date, datetime
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from typing import Any, NamedTuple
 
 MAX_OCR_SUBSTITUTIONS = 2
+
+# Tried in order. strptime rather than a hand-rolled regex, because strptime
+# rejects 2024-02-30 and 2023-02-29 for free -- a regex that only checks shape
+# would accept both, and calendar arithmetic is not worth reimplementing.
+DATE_FORMATS = (
+    "%Y-%m-%d",
+    "%m/%d/%Y",
+    "%d/%m/%Y",
+    "%Y/%m/%d",
+    "%b %d, %Y",
+    "%B %d, %Y",
+    "%d-%b-%Y",
+)
 
 # Strings OCR emits when it found nothing. These mean "absent", which is a
 # different thing from a zero amount.
@@ -103,6 +117,43 @@ def normalize_amount(raw: Any) -> AmountResult:
     return AmountResult(_quantize(value), "ok", repairs)
 
 
+class DateResult(NamedTuple):
+    """``status`` is one of ``ok``, ``missing`` or ``invalid``.
+
+    ``notes`` carries observations that are worth surfacing but are not
+    defects -- an ambiguous slash date is read, not flagged.
+    """
+
+    value: date | None
+    status: str
+    notes: list[str]
+
+
+def normalize_date(raw: Any) -> DateResult:
+    """Parse a date, recording any reading the format left genuinely ambiguous."""
+    if raw is None:
+        return DateResult(None, "missing", [])
+    if not isinstance(raw, str):
+        return DateResult(None, "invalid", [])
+
+    text = raw.strip()
+    if not text:
+        return DateResult(None, "missing", [])
+
+    parsed = _first_matching_format(text)
+    if parsed is None:
+        return DateResult(None, "invalid", [])
+
+    notes = []
+    alternative = _alternative_day_first_reading(text, parsed)
+    if alternative is not None:
+        notes.append(
+            f"ambiguous_date: read as {parsed.isoformat()} under MM/DD/YYYY, "
+            f"also valid as {alternative.isoformat()} under DD/MM/YYYY"
+        )
+    return DateResult(parsed, "ok", notes)
+
+
 def normalize_vendor(raw: Any) -> str | None:
     """Collapse whitespace; return ``None`` for absent or blank names.
 
@@ -114,6 +165,34 @@ def normalize_vendor(raw: Any) -> str | None:
     if not isinstance(raw, str):
         return None
     return " ".join(raw.split()) or None
+
+
+# --------------------------------------------------------------------------
+# Date parsing internals
+# --------------------------------------------------------------------------
+
+
+def _first_matching_format(text: str) -> date | None:
+    for fmt in DATE_FORMATS:
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+
+def _alternative_day_first_reading(text: str, parsed: date) -> date | None:
+    """Return the day-first reading when it differs from the one we took.
+
+    01/06/2024 is Jan 6 and Jun 1, and nothing in the string decides between
+    them. 03/03/2024 reads the same either way, so there is no ambiguity to
+    report even though both formats match.
+    """
+    try:
+        day_first = datetime.strptime(text, "%d/%m/%Y").date()
+    except ValueError:
+        return None
+    return day_first if day_first != parsed else None
 
 
 # --------------------------------------------------------------------------
