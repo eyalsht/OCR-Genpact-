@@ -229,6 +229,7 @@ tests/                   109 tests across 5 files
 tools/make_assets.py     regenerates every image in this README
 docs/RESEARCH.md         sourced background on OCR confusion pairs
 docs/ai-log.md           how AI was used, and where I disagreed with it
+docs/ai-chat-log/        the full conversation transcripts
 ```
 
 ---

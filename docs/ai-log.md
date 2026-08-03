@@ -109,9 +109,20 @@ part of TDD actually worth showing.
 
 ---
 
-## Transcript
+## Transcripts
 
-The planning conversation's artifacts are committed in [`planning/`](planning/) and
-[`RESEARCH.md`](RESEARCH.md) in full. The build itself was done with Claude Code, and the git
-history is the transcript: 15 commits, red-then-green in pairs, including the test correction
-above and the two commits where the figures were wrong and had to be re-rendered.
+Full conversations are in [`ai-chat-log/`](ai-chat-log/):
+
+| # | Chat | Status |
+|---|---|---|
+| 1 | [Planning conversation](ai-chat-log/01-planning-chat.md) (claude.ai) | ⚠️ transcript still to be added; its output is committed in [`planning/`](planning/) and [`RESEARCH.md`](RESEARCH.md) |
+| 2 | [Build session](ai-chat-log/02-build-session.md) (Claude Code) | ✅ full |
+| 3 | [Cold first-draft session](ai-chat-log/03-first-draft-session.md) | ✅ full |
+
+Chats 2 and 3 are exported from Claude Code's own session files by
+[`../tools/export_chat.py`](../tools/export_chat.py) — images dropped, long tool output
+truncated, harness scaffolding stripped, nothing else edited. Reasoning blocks are kept.
+
+The git history is the other transcript: red-then-green commit pairs, including the test
+correction above, the empty first render of the rule-matrix chart, and the fresh-clone install
+that turned out to be broken.
