@@ -1,0 +1,27 @@
+[project]
+name = "invoice-ocr-cleaner"
+version = "1.0.0"
+description = "Normalize and validate OCR-extracted invoice records."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+# Only needed to regenerate the README's images. The images are committed,
+# so a reviewer never has to install this.
+assets = ["pillow>=10.0", "matplotlib>=3.8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# Preserved verbatim as a baseline artifact; it is deliberately not cleaned up.
+"naive_first_draft.py" = ["ALL"]
