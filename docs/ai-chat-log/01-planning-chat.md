@@ -1,33 +1,21 @@
 # Chat 1 — Planning conversation (claude.ai)
 
-The first conversation, held on claude.ai before any code existed:
+The first conversation, held on claude.ai before any code existed.
 
-**https://claude.ai/chat/c5fee4d4-2d55-4000-87a5-9c443a5cb9e1**
+### 📎 [Read the full conversation →](https://claude.ai/share/9925bbb9-a404-4a08-b618-e92a6a23dea5)
 
-> **⚠️ This is a private conversation URL, not a share link.**
->
-> `claude.ai/chat/…` is the author's own address for a conversation — opening it while signed
-> in as anyone else gives a login prompt, not the transcript. A public share link looks like
-> `claude.ai/share/…` instead.
->
-> **To make this reviewable, do one of:**
->
-> 1. **Publish a share link** — open the conversation → *Share* → *Create public link*, then
->    replace the URL above with the `claude.ai/share/…` one it gives you.
-> 2. **Paste the transcript** below the divider at the end of this file, keeping the
->    `### 🧑 Eyal` / `### 🤖 Claude` heading style used in
->    [`02-build-session.md`](02-build-session.md) so all three read the same way.
->
-> Option 2 is the more durable of the two: a share link can be revoked, and the repository is
-> the thing being submitted. Chats 2 and 3 are already committed in full, so doing the same
-> here makes deliverable #3 self-contained.
+`https://claude.ai/share/9925bbb9-a404-4a08-b618-e92a6a23dea5`
+
+This one is a link rather than a committed transcript, because it happened in the claude.ai web
+app rather than in Claude Code — there is no session file on disk to export the way
+[chat 2](02-build-session.md) and [chat 3](03-first-draft-session.md) were. Its *output* is
+committed in full, below.
 
 ---
 
 ## What this chat produced
 
-Everything below is already committed, so the artifacts are reviewable even before the
-transcript lands:
+Its output is committed in this repository, so the substance is reviewable without leaving it:
 
 | Artifact | What it is |
 |---|---|
@@ -47,6 +35,13 @@ two distinct invoices and silently delete a payable.
 It also set two things that survived unchanged into the final code: that duplicates are flagged
 rather than dropped, and that "stale" is measured against the batch rather than the wall clock.
 
----
+## What did not survive contact with the code
 
-<!-- paste the transcript below this line -->
+Worth reading the conversation for, since the plan and the repository disagree in two places:
+
+- The plan predicted the AI first draft would report **only the first reason** on a row with two
+  failures. It did not — that was the bug I most expected and it was not there. What the draft
+  actually got wrong was subtler and worse: silent miscalculation.
+- The plan sketched a LangGraph agent for generating an adversarial corpus. It was cut. Its own
+  bail-out condition said a half-finished agent is worse than none, and it would have made CI
+  depend on an API key.

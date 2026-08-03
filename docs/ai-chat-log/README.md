@@ -4,7 +4,7 @@ Deliverable #3 — the conversations behind this repository, in the order they h
 
 | # | Chat | Where | Status |
 |---|---|---|---|
-| 1 | [Planning conversation](01-planning-chat.md) | claude.ai | ⚠️ linked, but the URL is a private one — needs a share link or a pasted transcript |
+| 1 | [Planning conversation](01-planning-chat.md) | claude.ai | ✅ [public share link](https://claude.ai/share/9925bbb9-a404-4a08-b618-e92a6a23dea5) |
 | 2 | [Build session](02-build-session.md) | Claude Code | ✅ full transcript, 128 KB |
 | 3 | [Cold first-draft session](03-first-draft-session.md) | Claude Code sub-agent | ✅ full transcript |
 
